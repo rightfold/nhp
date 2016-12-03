@@ -8,7 +8,10 @@ final class Main {
 
     public static function main(): void {
         $text = <<<'EOF'
-val goldenRatio = 3.14159265359f;
+val goldenRatio = {
+    val pi = 3.14159265359f;
+    1.61803398875f;
+};
 EOF;
         $lexer = new Lexer($text);
         $definitions = [];

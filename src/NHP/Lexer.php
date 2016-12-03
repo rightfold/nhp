@@ -12,6 +12,8 @@ final class Lexer {
 
     public const SEMICOLON_TYPE = 201;
     public const EQUALS_SIGN_TYPE = 202;
+    public const LEFT_BRACE_TYPE = 203;
+    public const RIGHT_BRACE_TYPE = 204;
 
     public const FLOAT_LITERAL_TYPE = 301;
 
@@ -47,6 +49,16 @@ final class Lexer {
         if ($this->text[0] === '=') {
             $this->text = substr($this->text, 1);
             return [self::EQUALS_SIGN_TYPE, null];
+        }
+
+        if ($this->text[0] === '{') {
+            $this->text = substr($this->text, 1);
+            return [self::LEFT_BRACE_TYPE, null];
+        }
+
+        if ($this->text[0] === '}') {
+            $this->text = substr($this->text, 1);
+            return [self::RIGHT_BRACE_TYPE, null];
         }
 
         throw new \Exception('invalid token at ' . $this->text);

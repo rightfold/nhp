@@ -23,6 +23,7 @@ final class Parse {
     public static function parseExpression(Lexer $lexer): AST\Expression {
         switch ($lexer->peek()[0]) {
         case Lexer::FLOAT_LITERAL_TYPE: return self::parseFloatLiteralExpression($lexer);
+        case Lexer::LEFT_BRACE_TYPE: return self::parseBlockExpression($lexer);
         default: throw new \Exception('parse error');
         }
     }
@@ -30,6 +31,24 @@ final class Parse {
     public static function parseFloatLiteralExpression(Lexer $lexer): AST\FloatLiteralExpression {
         $value = self::expect($lexer, Lexer::FLOAT_LITERAL_TYPE);
         return new AST\FloatLiteralExpression($value);
+    }
+
+    public static function parseBlockExpression(Lexer $lexer): AST\BlockExpression {
+        self::expect($lexer, Lexer::LEFT_BRACE_TYPE);
+        $statements = [];
+        while (($token = $lexer->peek())[0] !== Lexer::RIGHT_BRACE_TYPE) {
+            switch ($token[0]) {
+            case Lexer::VAL_TYPE:
+                $statements[] = self::parseDefinition($lexer);
+                break;
+            default:
+                $statements[] = self::parseExpression($lexer);
+                self::expect($lexer, Lexer::SEMICOLON_TYPE);
+                break;
+            }
+        }
+        $lexer->read();
+        return new AST\BlockExpression($statements);
     }
 
     private static function expect(Lexer $lexer, int $type) {
