@@ -1,0 +1,12 @@
+{
+    "name": "nhp",
+    "bin": ["bin/nhpc"],
+    "autoload": {
+        "psr-4": {
+            "NHP\\": "src/NHP/"
+        }
+    },
+    "require": {
+        "nikic/php-parser": "^3.0"
+    }
+}
