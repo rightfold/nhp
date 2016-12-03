@@ -12,6 +12,9 @@ val goldenRatio = {
     val pi = 3.14159265359f;
     1.61803398875f;
 };
+
+def getGoldenRatio() =
+    1.61803398875f;
 EOF;
         $lexer = new Lexer($text);
         $definitions = [];
