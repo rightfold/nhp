@@ -16,10 +16,9 @@ final class Analyzer {
 
     public function analyzeDefinition(AST\Definition $definition): void {
         if ($definition instanceof AST\VariableDefinition) {
-            $thing = new Thing($this->scope, Thing::VARIABLE_TYPE);
-            $definition->setThing($thing);
+            $definition->setScope($this->scope);
             $this->withScope(Scope::localScope())->analyzeExpression($definition->value());
-            $this->values[$definition->name()] = $thing;
+            $this->values[$definition->name()] = new Thing($this->scope, Thing::VARIABLE_TYPE);
         } elseif ($definition instanceof AST\FunctionDefinition) {
             $thing = new Thing($this->scope, Thing::FUNCTION_TYPE);
             $this->values[$definition->name()] = $thing;

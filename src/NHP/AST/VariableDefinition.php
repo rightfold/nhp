@@ -1,16 +1,16 @@
 <?php
 namespace NHP\AST;
-use NHP\Thing;
+use NHP\Scope;
 
 final class VariableDefinition extends Definition {
     private $name;
     private $value;
-    private $thing;
+    private $scope;
 
     public function __construct(string $name, Expression $value) {
         $this->name = $name;
         $this->value = $value;
-        $this->thing = null;
+        $this->scope = null;
     }
 
     public function name(): string {
@@ -21,11 +21,11 @@ final class VariableDefinition extends Definition {
         return $this->value;
     }
 
-    public function thing(): ?Thing {
-        return $this->thing;
+    public function scope(): ?Scope {
+        return $this->scope;
     }
 
-    public function setThing(?Thing $thing): void {
-        $this->thing = $thing;
+    public function setScope(?Scope $scope): void {
+        $this->scope = $scope;
     }
 }

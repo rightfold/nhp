@@ -15,6 +15,10 @@ final class Main {
             new AST\FunctionDefinition(
                 'getGoldenRatio',
                 new AST\BlockExpression([
+                    new AST\VariableDefinition(
+                        'diameterCircumferenceRatio',
+                        new AST\FloatLiteralExpression(3.14159265359)
+                    ),
                     new AST\VariableExpression('goldenRatio'),
                 ])
             ),

@@ -8,9 +8,36 @@ final class CodeGen {
 
     public static function codeGenDefinitionToStmts(AST\Definition $definition): array {
         if ($definition instanceof AST\VariableDefinition) {
-            return self::codeGenExpressionToStmts($definition->value(), function($result) use($definition) {
-                return [new Expr\Assign(new Expr\Variable($definition->name()), $result)];
-            });
+            if ($definition->scope() === Scope::globalScope()) {
+                return [
+                    new Stmt\Class_($definition->name(), [
+                        'flags' => Stmt\Class_::MODIFIER_FINAL,
+                        'stmts' => [
+                            new Stmt\Property(Stmt\Class_::MODIFIER_PRIVATE | Stmt\Class_::MODIFIER_STATIC, [
+                                new Stmt\PropertyProperty('value'),
+                            ]),
+                            new Stmt\ClassMethod('__construct', ['flags' => Stmt\Class_::MODIFIER_PRIVATE]),
+                            new Stmt\ClassMethod('initialize', [
+                                'flags' => Stmt\Class_::MODIFIER_PUBLIC | Stmt\Class_::MODIFIER_STATIC,
+                                'stmts' => self::codeGenExpressionToStmts($definition->value(), function($result) {
+                                    return [new Expr\Assign(new Expr\StaticPropertyFetch(new Name('self'), 'value'), $result)];
+                                }),
+                            ]),
+                            new Stmt\ClassMethod('value', [
+                                'flags' => Stmt\Class_::MODIFIER_PUBLIC | Stmt\Class_::MODIFIER_STATIC,
+                                'stmts' => [new Stmt\Return_(new Expr\StaticPropertyFetch(new Name('self'), 'value'))],
+                            ])
+                        ],
+                    ]),
+                    new Expr\StaticCall(new Name($definition->name()), 'initialize'),
+                ];
+            } elseif ($definition->scope() === Scope::localScope()) {
+                return self::codeGenExpressionToStmts($definition->value(), function($result) use($definition) {
+                    return [new Expr\Assign(new Expr\Variable($definition->name()), $result)];
+                });
+            } else {
+                assert(false);
+            }
         } elseif ($definition instanceof AST\FunctionDefinition) {
             return [new Stmt\Function_(
                 $definition->name(),
@@ -25,7 +52,25 @@ final class CodeGen {
 
     public static function codeGenExpressionToStmts(AST\Expression $expression, callable $withResult): array {
         if ($expression instanceof AST\VariableExpression) {
-            return $withResult(new Expr\Variable($expression->name()));
+            if ($expression->thing()->type() === Thing::VARIABLE_TYPE) {
+                if ($expression->thing()->scope() === Scope::globalScope()) {
+                    return $withResult(new Expr\StaticCall(new Name($expression->name()), 'value'));
+                } elseif ($expression->thing()->scope() === Scope::localScope()) {
+                    return $withResult(new Expr\Variable($expression->name()));
+                } else {
+                    assert(false);
+                }
+            } elseif ($expression->thing()->type() === Thing::FUNCTION_TYPE) {
+                if ($expression->thing()->scope() === Scope::globalScope()) {
+                    return $withResult(new Scalar\String_($expression->name()));
+                } elseif ($expression->thing()->scope() === Scope::localScope()) {
+                    return $withResult(new Expr\Variable($expression->name()));
+                } else {
+                    assert(false);
+                }
+            } else {
+                assert(false);
+            }
         } elseif ($expression instanceof AST\FloatLiteralExpression) {
             return $withResult(new Scalar\DNumber($expression->value()));
         } elseif ($expression instanceof AST\BlockExpression) {
