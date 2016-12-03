@@ -7,6 +7,14 @@ final class Main {
     private function __construct() { }
 
     public static function main(): void {
+        $text = <<<'EOF'
+val goldenRatio = 3.14159265359f;
+EOF;
+        $lexer = new Lexer($text);
+        while (($token = $lexer->read())[0] !== Lexer::EOF_TYPE) {
+            var_dump($token);
+        }
+
         $definitions = [
             new AST\VariableDefinition(
                 'goldenRatio',
