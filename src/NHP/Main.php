@@ -19,6 +19,12 @@ final class Main {
                 ])
             ),
         ];
+
+        $analyzer = new Analyzer(Scope::globalScope(), []);
+        foreach ($definitions as $definition) {
+            $analyzer->analyzeDefinition($definition);
+        }
+
         $stmts = [];
         foreach ($definitions as $definition) {
             $stmts = array_merge($stmts, CodeGen::codeGenDefinitionToStmts($definition));
