@@ -14,14 +14,26 @@ final class CodeGen {
                         'flags' => Stmt\Class_::MODIFIER_FINAL,
                         'stmts' => [
                             new Stmt\Property(Stmt\Class_::MODIFIER_PRIVATE | Stmt\Class_::MODIFIER_STATIC, [
+                                new Stmt\PropertyProperty('initialized', new Expr\ConstFetch(new Name('false'))),
                                 new Stmt\PropertyProperty('value'),
                             ]),
                             new Stmt\ClassMethod('__construct', ['flags' => Stmt\Class_::MODIFIER_PRIVATE]),
                             new Stmt\ClassMethod('initialize', [
                                 'flags' => Stmt\Class_::MODIFIER_PUBLIC | Stmt\Class_::MODIFIER_STATIC,
-                                'stmts' => self::codeGenExpressionToStmts($definition->value(), function($result) {
-                                    return [new Expr\Assign(new Expr\StaticPropertyFetch(new Name('self'), 'value'), $result)];
-                                }),
+                                'stmts' => [new Stmt\If_(
+                                    new Expr\BooleanNot(new Expr\StaticPropertyFetch(new Name('self'), 'initialized')),
+                                    [
+                                        'stmts' => array_merge(
+                                            [new Expr\Assign(
+                                                new Expr\StaticPropertyFetch(new Name('self'), 'initialized'),
+                                                new Expr\ConstFetch(new Name('true'))
+                                            )],
+                                            self::codeGenExpressionToStmts($definition->value(), function($result) {
+                                                return [new Expr\Assign(new Expr\StaticPropertyFetch(new Name('self'), 'value'), $result)];
+                                            })
+                                        ),
+                                    ]
+                                )],
                             ]),
                             new Stmt\ClassMethod('value', [
                                 'flags' => Stmt\Class_::MODIFIER_PUBLIC | Stmt\Class_::MODIFIER_STATIC,
