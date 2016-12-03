@@ -34,10 +34,16 @@ final class Parse {
 
     public static function parseExpression(Lexer $lexer): AST\Expression {
         switch ($lexer->peek()[0]) {
+        case Lexer::IDENTIFIER_TYPE: return self::parseVariableExpression($lexer);
         case Lexer::FLOAT_LITERAL_TYPE: return self::parseFloatLiteralExpression($lexer);
         case Lexer::LEFT_BRACE_TYPE: return self::parseBlockExpression($lexer);
         default: throw new \Exception('parse error');
         }
+    }
+
+    public static function parseVariableExpression(Lexer $lexer): AST\VariableExpression {
+        $name = self::expect($lexer, Lexer::IDENTIFIER_TYPE);
+        return new AST\VariableExpression($name);
     }
 
     public static function parseFloatLiteralExpression(Lexer $lexer): AST\FloatLiteralExpression {

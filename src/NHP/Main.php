@@ -14,7 +14,7 @@ val goldenRatio = {
 };
 
 def getGoldenRatio() =
-    1.61803398875f;
+    goldenRatio;
 EOF;
         $lexer = new Lexer($text);
         $definitions = [];
