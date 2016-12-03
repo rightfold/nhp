@@ -11,26 +11,10 @@ final class Main {
 val goldenRatio = 3.14159265359f;
 EOF;
         $lexer = new Lexer($text);
-        while (($token = $lexer->read())[0] !== Lexer::EOF_TYPE) {
-            var_dump($token);
+        $definitions = [];
+        while (($token = $lexer->peek())[0] !== Lexer::EOF_TYPE) {
+            $definitions[] = Parse::parseDefinition($lexer);
         }
-
-        $definitions = [
-            new AST\VariableDefinition(
-                'goldenRatio',
-                new AST\FloatLiteralExpression(1.61803398875)
-            ),
-            new AST\FunctionDefinition(
-                'getGoldenRatio',
-                new AST\BlockExpression([
-                    new AST\VariableDefinition(
-                        'diameterCircumferenceRatio',
-                        new AST\FloatLiteralExpression(3.14159265359)
-                    ),
-                    new AST\VariableExpression('goldenRatio'),
-                ])
-            ),
-        ];
 
         $analyzer = new Analyzer(Scope::globalScope(), []);
         foreach ($definitions as $definition) {

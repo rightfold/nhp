@@ -13,7 +13,7 @@ final class Lexer {
     public const SEMICOLON_TYPE = 201;
     public const EQUALS_SIGN_TYPE = 202;
 
-    public const FLOAT_TYPE = 301;
+    public const FLOAT_LITERAL_TYPE = 301;
 
     public function __construct(string $text) {
         $this->text = $text;
@@ -36,7 +36,7 @@ final class Lexer {
 
         if (preg_match('/^([0-9](\.[0-9]+)?)f/', $this->text, $matches)) {
             $this->text = substr($this->text, strlen($matches[0]));
-            return [self::FLOAT_TYPE, (float)$matches[1]];
+            return [self::FLOAT_LITERAL_TYPE, (float)$matches[1]];
         }
 
         if ($this->text[0] === ';') {
