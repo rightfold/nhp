@@ -8,13 +8,27 @@ final class Main {
 
     public static function main(): void {
         $text = <<<'EOF'
-val goldenRatio = {
-    val pi = 3.14159265359f;
-    1.61803398875f;
-};
-
+val goldenRatio = 1.61803398875f;
+val pi = 3.14159265359f;
 def getGoldenRatio() =
     goldenRatio;
+def getPi() =
+    pi;
+def discardGoldenRatioAndPi() = {
+    goldenRatio;
+    pi;
+    {};
+};
+def getGetGoldenRatio() = {
+    def getGoldenRatio() =
+        goldenRatio;
+    getGoldenRatio;
+};
+def getGetPi() = {
+    def getPi() =
+        pi;
+    getPi;
+};
 EOF;
         $lexer = new Lexer($text);
         $definitions = [];

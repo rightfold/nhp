@@ -51,12 +51,22 @@ final class CodeGen {
                 assert(false);
             }
         } elseif ($definition instanceof AST\FunctionDefinition) {
-            return [new Stmt\Function_(
-                $definition->name(),
-                ['stmts' => self::codeGenExpressionToStmts($definition->body(), function($result) {
-                    return [new Stmt\Return_($result)];
-                })]
-            )];
+            $stmts = self::codeGenExpressionToStmts($definition->body(), function($result) {
+                return [new Stmt\Return_($result)];
+            });
+            if ($definition->scope() === Scope::globalScope()) {
+                return [new Stmt\Function_(
+                    $definition->name(),
+                    ['stmts' => $stmts]
+                )];
+            } elseif ($definition->scope() === Scope::localScope()) {
+                return [new Expr\Assign(
+                    new Expr\Variable($definition->name()),
+                    new Expr\Closure(['stmts' => $stmts])
+                )];
+            } else {
+                assert(false);
+            }
         } else {
             assert(false);
         }

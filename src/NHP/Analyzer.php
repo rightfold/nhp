@@ -20,6 +20,7 @@ final class Analyzer {
             $this->withScope(Scope::localScope())->analyzeExpression($definition->value());
             $this->values[$definition->name()] = new Thing($this->scope, Thing::VARIABLE_TYPE);
         } elseif ($definition instanceof AST\FunctionDefinition) {
+            $definition->setScope($this->scope);
             $thing = new Thing($this->scope, Thing::FUNCTION_TYPE);
             $this->values[$definition->name()] = $thing;
             $this->withScope(Scope::localScope())->analyzeExpression($definition->body());
