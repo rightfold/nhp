@@ -13,20 +13,21 @@ val pi = 3.14159265359f;
 def getGoldenRatio() =
     goldenRatio;
 def getPi() =
-    pi;
+    3.14159265359f;
 def discardGoldenRatioAndPi() = {
     goldenRatio;
     pi;
     {};
 };
 def getGetGoldenRatio() = {
-    def getGoldenRatio() =
-        goldenRatio;
     getGoldenRatio;
 };
 def getGetPi() = {
-    def getPi() =
+    val pi = 3.14159265359f;
+    def getPi() = {
+        val pi = pi;
         pi;
+    };
     getPi;
 };
 EOF;
